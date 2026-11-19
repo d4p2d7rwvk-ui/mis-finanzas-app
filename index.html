@@ -1149,8 +1149,11 @@ function exportCSV(){
   download("movimientos-"+todayStr()+".csv", rows.map(r=>r.map(x=>`"${String(x).replace(/"/g,'""')}"`).join(";")).join("\n"), "text/csv");
 }
 function openRestore(){
-  sheet(`<h3>Restaurar copia</h3><div class="note">Pega el contenido de una copia de seguridad. Sustituirá TODOS los datos actuales.</div><textarea class="i" id="restoreTa" style="min-height:200px;font-size:12px;margin-top:10px"></textarea><div class="btns" style="margin-top:10px"><button class="btn d" data-a="doRestore">Restaurar</button><button class="btn" data-a="close">Cancelar</button></div>`);
+  sheet(`<h3>Restaurar copia</h3><div class="note">Elige el archivo de la copia (.json) o pega su contenido. Sustituirá TODOS los datos actuales.</div><label class="f">Archivo<input class="i" type="file" id="restoreFile" accept=".json,application/json,text/plain" style="padding-top:10px"></label><textarea class="i" id="restoreTa" placeholder="…o pega aquí el texto" style="min-height:160px;font-size:12px;margin-top:10px"></textarea><div class="btns" style="margin-top:10px"><button class="btn d" data-a="doRestore">Restaurar</button><button class="btn" data-a="close">Cancelar</button></div>`);
 }
+document.addEventListener("change", e => {
+  if (e.target && e.target.id === "restoreFile"){ const f = e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => { $("#restoreTa").value = r.result; doRestore(); }; r.readAsText(f); }
+});
 function doRestore(){
   try {
     const o = JSON.parse($("#restoreTa").value);
